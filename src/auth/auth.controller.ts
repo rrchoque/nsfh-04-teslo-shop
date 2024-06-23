@@ -24,11 +24,13 @@ export class AuthController {
   testingPrivateRoute(
     @Req() request: Express.Request,
     @GetUser() user: User,
+    @GetUser('email') userEmail: string,
   ) {
     return {
       ok: true,
       message: 'Hola Mundo Private',
-      user
+      user,
+      userEmail
     };
   }
 }
