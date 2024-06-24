@@ -38,33 +38,37 @@ export class AuthService {
     }
   }
 
-  async login( loginUserDto: LoginUserDto ) {
-
+  async login(loginUserDto: LoginUserDto) {
     const { password, email } = loginUserDto;
 
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { email: true, password: true, id: true } //! OJO!
+      select: { email: true, password: true, id: true }, //! OJO!
     });
 
-    if ( !user ) 
+    if (!user)
       throw new UnauthorizedException('Credentials are not valid (email)');
-      
-    if ( !bcrypt.compareSync( password, user.password ) )
+
+    if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Credentials are not valid (password)');
 
     delete user.password;
     return {
       ...user,
-      token: this.getJwtToken({id: user.id})
+      token: this.getJwtToken({ id: user.id }),
     };
   }
 
-  private getJwtToken( payload: JwtPayload ) {
+  async checkAuthStatus(user: User) {
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
 
-    const token = this.jwtService.sign( payload );
+  private getJwtToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
     return token;
-
   }
 
   private handleDBErrors(error: any): never {
