@@ -41,7 +41,8 @@ export class MessagesWsGateway
 
   @SubscribeMessage('message-from-client')
   onMessageFromClient(client: Socket, payload: NewMessageDto) {
-    console.log({id: client.id, payload})
+
+    //console.log({id: client.id, payload})
     //! Emite únicamente al cliente.
     // client.emit('message-from-server', {
     //   fullName: 'Soy Yo!',
@@ -54,9 +55,10 @@ export class MessagesWsGateway
     //   message: payload.message || 'no-message!!'
     // });
 
-    // this.wss.emit('message-from-server', {
-    //   fullName: this.messagesWsService.getUserFullName(client.id),
-    //   message: payload.message || 'no-message!!',
-    // });
+    //! Emitir a todos MENOS
+    this.wss.emit('message-from-server', {
+      fullName: 'Soy Yo!',
+      message: payload.message || 'no-message!!',
+    });
   }
 }
