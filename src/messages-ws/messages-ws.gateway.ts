@@ -8,6 +8,8 @@ import {
 import { MessagesWsService } from './messages-ws.service';
 import { Server, Socket } from 'socket.io';
 import { NewMessageDto } from './dto/new-message.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'src/auth/interfaces';
 
 @WebSocketGateway({ cors: true })
 export class MessagesWsGateway
@@ -15,11 +17,29 @@ export class MessagesWsGateway
 {
   @WebSocketServer() wss: Server;
 
-  constructor(private readonly messagesWsService: MessagesWsService) {}
+  constructor(
+    private readonly messagesWsService: MessagesWsService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
+    const token = client.handshake.headers.authentication as string;
+    console.log({ token });
+
+    let payload: JwtPayload;
+
+    try {
+      payload = this.jwtService.verify(token);
+      await this.messagesWsService.registerClient(client, payload.id);
+    } catch (error) {
+      client.disconnect();
+      return;
+    }
+
+    //console.log({payload})
+
     //console.log('Cliente conectado', client.id)
-    this.messagesWsService.registerClient(client);
+    //this.messagesWsService.registerClient(client, payload.id);
     //console.log({ conectados: this.messagesWsService.getConnectedClients()});
 
     this.wss.emit(
@@ -41,7 +61,6 @@ export class MessagesWsGateway
 
   @SubscribeMessage('message-from-client')
   onMessageFromClient(client: Socket, payload: NewMessageDto) {
-
     //console.log({id: client.id, payload})
     //! Emite únicamente al cliente.
     // client.emit('message-from-server', {
@@ -57,7 +76,7 @@ export class MessagesWsGateway
 
     //! Emitir a todos MENOS
     this.wss.emit('message-from-server', {
-      fullName: 'Soy Yo!',
+      fullName: this.messagesWsService.getUserFullName(client.id),
       message: payload.message || 'no-message!!',
     });
   }
