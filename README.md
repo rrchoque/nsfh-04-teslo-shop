@@ -6,7 +6,10 @@
 # Teslo API
 
 1. Clonar proyecto
-2. ```yarn install```
+2. Instalar las dependencias 
+```
+yarn install
+```
 3. Clonar el archivo ```.env.template``` y renombrarlo a ```.env```
 4. Cambiar las variables de entorno
 5. Levantar la base de datos
@@ -20,3 +23,11 @@ http://localhost:3001/api/seed
 ```
 
 7. Levantar: ```yarn start:dev```
+
+
+8. Ingresamos a la API
+```
+http://localhost:3001/api
+```
+
+![Captura de pantalla](<images/Captura de pantalla de 2024-07-21 07-26-56.png>)
