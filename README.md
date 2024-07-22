@@ -30,4 +30,4 @@ http://localhost:3001/api/seed
 http://localhost:3001/api
 ```
 
-![Captura de pantalla](<images/Captura de pantalla de 2024-07-21 07-26-56.png>)
+![alt text](images/captura-001.webp)
